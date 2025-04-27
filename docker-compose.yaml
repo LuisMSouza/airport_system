@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=django-insecure-myc3^i_w!4b8u!=cds(vpt=@++r7b(=em5)&79r@lvex6@hs)9
+      - DATABASE_URL=sqlite:///db.sqlite3
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=django-insecure-myc3^i_w!4b8u!=cds(vpt=@++r7b(=em5)&79r@lvex6@hs)9
+      - DATABASE_URL=sqlite:///db.sqlite3
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+      - web
+    command: celery -A airport_sistem worker -l info
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=django-insecure-myc3^i_w!4b8u!=cds(vpt=@++r7b(=em5)&79r@lvex6@hs)9
+      - DATABASE_URL=sqlite:///db.sqlite3
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+      - web
+      - celery
+    command: celery -A airport_sistem beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler

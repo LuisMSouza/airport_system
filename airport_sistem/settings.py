@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'airports_api',
     'django_celery_beat',
     'rest_framework',
+    'mock_airlines_flights',
 ]
 
 REST_FRAMEWORK = {
