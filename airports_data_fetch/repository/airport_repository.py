@@ -1,5 +1,5 @@
 from django.db import transaction
-from models import Airports
+from airports_data_fetch.models import Airports
 
 class AirportRepository:
     """
@@ -13,13 +13,13 @@ class AirportRepository:
         Upserts a list of airports into the database.
         """
         with transaction.atomic():
-            for airport in airports_data:
+            for iata_code, airport in airports_data.items():
                 self.model.objects.update_or_create(
                     iata=airport['iata'],
                     defaults={
                         'city': airport['city'],
-                        'latitude': airport['latitude'],
-                        'longitude': airport['longitude'],
+                        'latitude': airport['lat'],
+                        'longitude': airport['lon'],
                         'state': airport['state']
                     }
                 )
