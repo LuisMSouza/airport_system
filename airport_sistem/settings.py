@@ -138,14 +138,14 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CELERY_BROKER_URL = "redis://localhost:6379/0"  # URL do Redis
+CELERY_BROKER_URL = "redis://localhost:6379/0"
 CELERY_RESULT_BACKEND = (
-    "redis://localhost:6379/0"  # URL do Redis para armazenar resultados
+    "redis://localhost:6379/0"
 )
 CELERY_BEAT_SCHEDULE = {
     "fetch_airports_data": {
         "task": "airports_data_fetch.tasks.fetch_airports_data",
-        "schedule": crontab(hour=0, minute=0),  # Executa diariamente à meia-noite
-        "args": [],  # Argumentos para a tarefa, se necessário
+        "schedule": crontab(hour=0, minute=0),
+        "args": [],
     },
 }

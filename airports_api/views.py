@@ -4,7 +4,7 @@ from airports_data_fetch.models import Airports
 
 class AirportViewSet(viewsets.ModelViewSet):
     """
-    ViewSet para o modelo Airports.
+    ViewSet for Airports.
     """
     queryset = Airports.objects.all()
     serializer_class = AirportSerializer

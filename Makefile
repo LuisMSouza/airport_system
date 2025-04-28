@@ -1,8 +1,7 @@
-.PHONY: build up down logs shell migrate makemigrations superuser collectstatic test heroku-login heroku-create heroku-push heroku-release heroku-deploy heroku-logs requirements help
+.PHONY: build up down logs shell migrate makemigrations superuser collectstatic test requirements help
 
 # Project variables
 PROJECT_NAME = airport_sistem
-HEROKU_APP_NAME = $(PROJECT_NAME)
 
 help:
     @echo "Available commands:"
