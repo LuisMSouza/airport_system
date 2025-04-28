@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', include('airports_api.routes')),
+    path("admin/", admin.site.urls),
+    path("api/airports/", include("airports_api.urls")),
+    path("api/mock-airlines/", include("mock_airlines_flights.urls")),
 ]

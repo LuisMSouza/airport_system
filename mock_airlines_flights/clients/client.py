@@ -6,8 +6,11 @@ USER = "demo"
 PASSWORD = "swnvlD"
 API_KEY = "pzrvlDwoCwlzrWJmOzviqvOWtm4dkvuc"
 
+
 class Client:
-    def __init__(self, base_url=API_BASE, user=USER, password=PASSWORD, api_key=API_KEY):
+    def __init__(
+        self, base_url=API_BASE, user=USER, password=PASSWORD, api_key=API_KEY
+    ):
         self.base_url = base_url
         self.user = user
         self.password = password
@@ -25,16 +28,11 @@ class Client:
             dict: The flight information.
         """
         url = f"{self.base_url}/{self.api_key}/{airport_from}/{airport_to}/{date}"
-        response = requests.get(url, auth=HTTPBasicAuth(self.user, self.password), timeout=10)
+        response = requests.get(
+            url, auth=HTTPBasicAuth(self.user, self.password), timeout=10
+        )
         response.raise_for_status()
         return response.json()
-    
-client = Client()
 
-if __name__ == "__main__":
-    # Example usage
-    try:
-        flight_info = client.get_flight("SFO", "LAX", "2023-10-01")
-        print(flight_info)
-    except requests.RequestException as e:
-        print(f"Error fetching flight information: {e}")
+
+client = Client()

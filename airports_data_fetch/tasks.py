@@ -1,8 +1,9 @@
 from celery import shared_task
-from clients.domestic_airports import domestic_airports_client
+from airports_data_fetch.clients.domestic_airports import domestic_airports_client
 from repository.airport_repository import airport_repository
 
-ENDPOINT_URL = 'https://stub.amopromo.com/air/airports/pzrvlDwoCwlzrWJmOzviqvOWtm4dkvuc'  # URL da API de aeroportos
+ENDPOINT_URL = "https://stub.amopromo.com/air/airports/pzrvlDwoCwlzrWJmOzviqvOWtm4dkvuc"  # URL da API de aeroportos
+
 
 @shared_task
 def fetch_airports_data():
