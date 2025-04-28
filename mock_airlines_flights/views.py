@@ -3,14 +3,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from datetime import date as dt_date
 from dateutil.parser import parse
-
+from .serializer import FlightSearchSerializer, FlightCombinationSerializer
+from .clients.client import client
+from .services.service import service
 from airports_data_fetch.models import Airports
-from mock_airlines_flights.serializer import (
-    FlightSearchSerializer,
-    FlightCombinationSerializer,
-)
-from mock_airlines_flights.clients.client import client
-from mock_airlines_flights.services.service import service
 
 
 class FlightSearchView(APIView):
@@ -19,56 +15,68 @@ class FlightSearchView(APIView):
     def get(self, request):
         flight_serializer = FlightSearchSerializer(data=request.query_params)
         flight_serializer.is_valid(raise_exception=True)
-        origin_airport, destination_airport, departure_date = (
-            flight_serializer.validated_data["origin"],
-            flight_serializer.validated_data["destination"],
-            flight_serializer.validated_data["departure_date"],
-        )
-        return_date = flight_serializer.validated_data["return_date"]
+        validated_data = flight_serializer.validated_data
 
-        if origin_airport == destination_airport:
-            return Response(
-                {"error": "origin and destination cannot be the same"}, status=400
-            )
-        if departure_date < dt_date.today() or return_date < departure_date:
-            return Response({"error": "invalid date"}, status=400)
+        origin = validated_data["origin"]
+        destination = validated_data["destination"]
+        departure_date = validated_data["departure_date"]
+        return_date = validated_data["return_date"]
 
-        for airport_code in (origin_airport, destination_airport):
-            if not Airports.objects.filter(iata=airport_code).exists():
-                return Response(
-                    {"error": f"airport {airport_code} not found."}, status=400
-                )
+        today = dt_date.today()
+        if departure_date < today or return_date < departure_date:
+            return Response({"error": "Invalid date range"}, status=400)
 
-        outbound_flights = client.get_flight(
-            origin_airport, destination_airport, departure_date.strftime("%Y-%m-%d")
-        )
-        inbound_flights = client.get_flight(
-            destination_airport, origin_airport, return_date.strftime("%Y-%m-%d")
-        )
+        try:
+            origin_airport = Airports.objects.get(iata=origin)
+            destination_airport = Airports.objects.get(iata=destination)
+        except Airports.DoesNotExist:
+            return Response({"error": "Airport not found"}, status=404)
 
-        for flight_option in outbound_flights["options"]:
-            flight_option["price"] = service.calculate_price(
-                flight_option["price"]["fare"]
+        try:
+            outbound_response = client.get_flight(
+                origin, destination, departure_date.strftime("%Y-%m-%d")
             )
-            flight_option["meta"] = service.calculate_meta(
-                outbound_flights["summary"]["from"],
-                outbound_flights["summary"]["to"],
-                parse(flight_option["departure_time"]),
-                parse(flight_option["arrival_time"]),
+            inbound_response = client.get_flight(
+                destination, origin, return_date.strftime("%Y-%m-%d")
             )
-        for flight_option in inbound_flights["options"]:
-            flight_option["price"] = service.calculate_price(
-                flight_option["price"]["fare"]
-            )
-            flight_option["meta"] = service.calculate_meta(
-                inbound_flights["summary"]["from"],
-                inbound_flights["summary"]["to"],
-                parse(flight_option["departure_time"]),
-                parse(flight_option["arrival_time"]),
-            )
+        except Exception as e:
+            return Response({"error": f"Flight API error: {str(e)}"}, status=503)
 
-        flight_combinations = service.build_flights(
-            outbound_flights["options"], inbound_flights["options"]
-        )
-        response_data = FlightCombinationSerializer(flight_combinations, many=True).data
-        return Response(response_data)
+        def process_flights(response):
+            processed = []
+            for flight in response.get("options", []):
+                try:
+                    departure = parse(flight["departure_time"].replace(" ", "T"))
+                    arrival = parse(flight["arrival_time"].replace(" ", "T"))
+
+                    fare = flight["price"]["fare"]
+                    meta = service.calculate_meta(
+                        response["summary"]["from"],
+                        response["summary"]["to"],
+                        departure,
+                        arrival,
+                        fare,
+                    )
+
+                    processed.append(
+                        {
+                            "departure_time": departure.isoformat(),
+                            "arrival_time": arrival.isoformat(),
+                            "price": service.calculate_price(fare),
+                            "meta": meta,
+                        }
+                    )
+                except Exception as e:
+                    print(f"Skipping invalid flight: {str(e)}")
+            return processed
+
+        processed_outbound = process_flights(outbound_response)
+        processed_inbound = process_flights(inbound_response)
+
+        flight_combinations = service.build_flights(processed_outbound, processed_inbound)
+
+        if not flight_combinations:
+            return Response({"warning": "No valid flight combinations found"}, status=404)
+
+        serializer = FlightCombinationSerializer(flight_combinations, many=True)
+        return Response(serializer.data)

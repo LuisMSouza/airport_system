@@ -1,7 +1,6 @@
-from datetime import date as dt
 from math import radians, sin, cos, sqrt, asin
-from airports_data_fetch.models import Airports
 from mock_airlines_flights.clients.client import client
+from dateutil.parser import parse
 
 
 class Service:
@@ -56,17 +55,19 @@ class Service:
         }
 
     def calculate_meta(
-        self, departure_airport, arrival_airport, departure_time, arrival_time
+        self,
+        departure_airport,
+        arrival_airport,
+        departure_time,
+        arrival_time,
+        fare,
     ):
-        """
-        Calculate the meta information for a flight.
-        """
-        distance_km = self._harversine(
-            departure_airport["latitude"],
-            departure_airport["longitude"],
-            arrival_airport["latitude"],
-            arrival_airport["longitude"],
-        )
+        dep_lat = departure_airport["lat"]
+        dep_lon = departure_airport["lon"]
+        arr_lat = arrival_airport["lat"]
+        arr_lon = arrival_airport["lon"]
+
+        distance_km = self._harversine(dep_lat, dep_lon, arr_lat, arr_lon)
 
         flight_duration_hours = (arrival_time - departure_time).total_seconds() / 3600
         approximate_speed = (
@@ -76,9 +77,7 @@ class Service:
         )
 
         cost_per_km = (
-            round(self.calculate_price(1)["fare"] / distance_km, 2)
-            if distance_km > 0
-            else 0
+            round(fare / distance_km, 2) if distance_km > 0 and fare > 0 else 0
         )
 
         return {
@@ -87,38 +86,39 @@ class Service:
             "cost_per_km": cost_per_km,
         }
 
+
     def build_flights(self, outbound_flights, inbound_flights) -> list:
         """
-        Build the flight information based on the outbound and inbound flights.
+        Build the flight information.
         """
-        combined_flights = []
+        combined = []
+        for outbound in outbound_flights:
+            for inbound in inbound_flights:
+                try:
+                    outbound_arrival = parse(outbound["arrival_time"])
+                    inbound_departure = parse(inbound["departure_time"])
 
-        for outbound_flight in outbound_flights:
-            for inbound_flight in inbound_flights:
-                total_price = (
-                    outbound_flight["price"]["total"] + inbound_flight["price"]["total"]
-                )
-                combined_flights.append(
-                    {
-                        "outbound": outbound_flight,
-                        "inbound": inbound_flight,
-                        "price": {
-                            "fare": round(
-                                outbound_flight["price"]["fare"]
-                                + inbound_flight["price"]["fare"],
-                                2,
-                            ),
-                            "fee": round(
-                                outbound_flight["price"]["fee"]
-                                + inbound_flight["price"]["fee"],
-                                2,
-                            ),
-                            "total": round(total_price, 2),
-                        },
-                    }
-                )
+                    if inbound_departure > outbound_arrival:
+                        total_fare = outbound["price"]["fare"] + inbound["price"]["fare"]
+                        total_fee = outbound["price"]["fee"] + inbound["price"]["fee"]
 
-        return sorted(combined_flights, key=lambda x: x["price"]["total"])
+                        combined.append(
+                            {
+                                "outbound": outbound,
+                                "inbound": inbound,
+                                "price": {
+                                    "fare": round(total_fare, 2),
+                                    "fee": round(total_fee, 2),
+                                    "total": round(total_fare + total_fee, 2),
+                                },
+                            }
+                        )
+
+                except (KeyError, ValueError) as e:
+                    print(f"Error processing flight combination: {str(e)}")
+                    continue
+
+        return sorted(combined, key=lambda x: x["price"]["total"])
 
 
 service = Service()

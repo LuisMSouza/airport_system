@@ -1,18 +1,17 @@
 # Airport System API
 
-## 📋 Requisitos
+## 📋 Requirements
 - Docker
 - Python 3.9+
 
-## 🚀 Instalação Local
+## 🚀 Local Installation
 ```bash
 docker-compose up --build
 ```
 
-## 🔐 Autenticação
+## 🔐 Authentication
 
-
-Inclua o token no header das requisições:
+Include the token in request headers:
 
 ```http
 Authorization: Token 3b77a634ada844c07f20eb9f80d4610145d7d806
@@ -20,29 +19,29 @@ Authorization: Token 3b77a634ada844c07f20eb9f80d4610145d7d806
 
 ## 🌐 Endpoints
 
-### Buscar Voos (Mock Airlines)
+### Search Flights (Mock Airlines)
 GET /api/mock-airlines/search/
 
-Parâmetros:
-- `origin`: Código IATA (ex: GRU)
-- `destination`: Código IATA (ex: GIG)
-- `departure_date`: Data de ida (YYYY-MM-DD)
-- `return_date`: Data de volta (YYYY-MM-DD)
+Parameters:
+- `origin`: IATA Code (ex: GRU)
+- `destination`: IATA Code (ex: GIG)
+- `departure_date`: Departure date (YYYY-MM-DD)
+- `return_date`: Return date (YYYY-MM-DD)
 
-Exemplo:
+Example:
 
 ```bash
 curl --location 'https://airportsistem-eaa1fefe93b7.herokuapp.com/api/mock-airlines/search/?origin=GRU&destination=GIG&departure_date=2026-05-20&return_date=2026-05-25' --header 'Authorization: Token 3b77a634ada844c07f20eb9f80d4610145d7d806'
 ```
 
-### Atualizar Aeroportos
-Executa automaticamente às 00:00 via Celery.
+### Update Airports
+Runs automatically at 00:00 via Celery.
 
-## ☁️ Hospedagem
-URL da API:
+## ☁️ Hosting
+API URL:
 https://airportsistem-eaa1fefe93b7.herokuapp.com
 
-## 🛠️ Tecnologias Utilizadas
+## 🛠️ Technologies Used
 - Django
 - Django REST Framework
 - Celery
