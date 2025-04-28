@@ -1,7 +1,7 @@
 import requests
 from requests.auth import HTTPBasicAuth
 
-API_BASE = "http://stub.2xt.com.br/air/search"
+API_BASE = "https://stub-850169372117.us-central1.run.app/air/search"
 USER = "demo"
 PASSWORD = "swnvlD"
 API_KEY = "pzrvlDwoCwlzrWJmOzviqvOWtm4dkvuc"
