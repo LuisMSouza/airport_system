@@ -1,7 +1,7 @@
 .PHONY: build up down logs shell migrate makemigrations superuser collectstatic test requirements help
 
 # Project variables
-PROJECT_NAME = airport_sistem
+PROJECT_NAME = airport_system
 
 help:
     @echo "Available commands:"

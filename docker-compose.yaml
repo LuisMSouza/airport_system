@@ -3,20 +3,20 @@ version: '3.8'
 services:
   web:
     build: .
-    command: gunicorn --bind 0.0.0.0:8000 airport_sistem.wsgi:application
+    command: gunicorn --bind 0.0.0.0:8000 airport_system.wsgi:application
     ports:
       - "8000:8000"
     environment:
-      - DJANGO_SETTINGS_MODULE=airport_sistem.settings.production
+      - DJANGO_SETTINGS_MODULE=airport_system.settings.production
       - REDIS_URL=redis://redis:6379/0
     depends_on:
       - redis
 
   celery:
     build: .
-    command: celery -A airport_sistem worker --loglevel=info
+    command: celery -A airport_system worker --loglevel=info
     environment:
-      - DJANGO_SETTINGS_MODULE=airport_sistem.settings.production
+      - DJANGO_SETTINGS_MODULE=airport_system.settings.production
       - REDIS_URL=redis://redis:6379/0
     depends_on:
       - redis
