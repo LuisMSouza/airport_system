@@ -1,5 +1,7 @@
 FROM python:3.12-slim
 
+ENV PORT=8000
+
 WORKDIR /app
 
 COPY requirements.txt .
@@ -7,4 +9,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "airport_sistem.wsgi:application"]
+CMD ["sh", "-c", "gunicorn airport_sistem.wsgi:application --bind 0.0.0.0:$PORT"]

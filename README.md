@@ -15,7 +15,7 @@ docker-compose up --build
 Inclua o token no header das requisições:
 
 ```http
-Authorization: Token 0f13051c97472f76dfe17696bab8d385c735b2a0
+Authorization: Token 3b77a634ada844c07f20eb9f80d4610145d7d806
 ```
 
 ## 🌐 Endpoints
@@ -32,7 +32,7 @@ Parâmetros:
 Exemplo:
 
 ```bash
-curl -H "Authorization: Token 0f13051c97472f76dfe17696bab8d385c735b2a0" "http://localhost:8000/api/mock-airlines/search/?origin=GRU&destination=GIG&departure_date=2024-05-20&return_date=2024-05-25"
+curl --location 'https://airportsistem-eaa1fefe93b7.herokuapp.com/api/mock-airlines/search/?origin=GRU&destination=GIG&departure_date=2026-05-20&return_date=2026-05-25' --header 'Authorization: Token 3b77a634ada844c07f20eb9f80d4610145d7d806'
 ```
 
 ### Atualizar Aeroportos
@@ -40,7 +40,7 @@ Executa automaticamente às 00:00 via Celery.
 
 ## ☁️ Hospedagem
 URL da API:
-https://nome-do-seu-app.herokuapp.com
+https://airportsistem-eaa1fefe93b7.herokuapp.com
 
 ## 🛠️ Tecnologias Utilizadas
 - Django

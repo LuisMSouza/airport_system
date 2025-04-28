@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from celery.schedules import crontab
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,9 +25,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-myc3^i_w!4b8u!=cds(vpt=@++r7b(=em5)&79r@lvex6@hs)9"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+DEBUG = False
+ALLOWED_HOSTS = ["airportsistem-eaa1fefe93b7.herokuapp.com"]
 
 
 # Application definition
@@ -89,12 +89,7 @@ WSGI_APPLICATION = "airport_sistem.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
+DATABASES = {"default": dj_database_url.config(conn_max_age=600, ssl_require=True)}
 
 
 # Password validation
@@ -139,9 +134,7 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CELERY_BROKER_URL = "redis://localhost:6379/0"
-CELERY_RESULT_BACKEND = (
-    "redis://localhost:6379/0"
-)
+CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
 CELERY_BEAT_SCHEDULE = {
     "fetch_airports_data": {
         "task": "airports_data_fetch.tasks.fetch_airports_data",
