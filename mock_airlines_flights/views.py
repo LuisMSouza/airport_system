@@ -27,14 +27,16 @@ class FlightSearchView(APIView):
         return_date = flight_serializer.validated_data["return_date"]
 
         if origin_airport == destination_airport:
-            return Response({"error": "origem e destino iguais"}, status=400)
+            return Response(
+                {"error": "origin and destination cannot be the same"}, status=400
+            )
         if departure_date < dt_date.today() or return_date < departure_date:
             return Response({"error": "invalid date"}, status=400)
 
         for airport_code in (origin_airport, destination_airport):
             if not Airports.objects.filter(iata=airport_code).exists():
                 return Response(
-                    {"error": f"aeroporto {airport_code} não encontrado"}, status=400
+                    {"error": f"airport {airport_code} not found."}, status=400
                 )
 
         outbound_flights = client.get_flight(
