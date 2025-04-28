@@ -4,10 +4,9 @@
 - Docker
 - Python 3.9+
 
-## 🚀 Local Installation
-```bash
-docker-compose up --build
-```
+## ☁️ Hosting
+API URL:
+https://airportsistem-eaa1fefe93b7.herokuapp.com
 
 ## 🔐 Authentication
 
@@ -36,10 +35,6 @@ curl --location 'https://airportsystem-82ef0b028080.herokuapp.com/api/mock-airli
 
 ### Update Airports
 Runs automatically at 00:00 via Celery.
-
-## ☁️ Hosting
-API URL:
-https://airportsistem-eaa1fefe93b7.herokuapp.com
 
 ## 🛠️ Technologies Used
 - Django
