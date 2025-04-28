@@ -4,12 +4,12 @@ class DomesticAirportsClient:
     """
     Client to fetch domestic airports data from an API.
     """
-    ENDPOINT_URL = 'https://stub.amopromo.com/air/airports/pzrvlDwoCwlzrWJmOzviqvOWtm4dkvuc'  # URL da API de aeroportos
+    ENDPOINT_URL = 'https://stub.amopromo.com/air/airports/pzrvlDwoCwlzrWJmOzviqvOWtm4dkvuc'
 
     def __init__(self):
         self.headers = {
             'accept-language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
-            'authorization': 'Basic ZGVtbzpzd252bEQ=',  # Refere-se ao usuário e senha codificado em base64 para autenticação na API: demo:swnvlD
+            'authorization': 'Basic ZGVtbzpzd252bEQ=',  # User and password encoded in Base64
             'priority': 'u=0, i',
             'referer': 'https://gist.github.com/',
             'sec-ch-ua': 'Google',
@@ -34,7 +34,7 @@ class DomesticAirportsClient:
         """
         try:
             response = requests.get(self.ENDPOINT_URL, headers=self.headers)
-            response.raise_for_status()  # Levanta um erro se a requisição falhar
+            response.raise_for_status()
             return response.json()
         except requests.RequestException as e:
             print(f"Error while fetching data: {e}")
