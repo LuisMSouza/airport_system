@@ -3,7 +3,7 @@ from .base import *
 import dj_database_url
 
 DEBUG = False
-ALLOWED_HOSTS = ["airportsistem-eaa1fefe93b7.herokuapp.com"]
+ALLOWED_HOSTS = ["airportsystem-82ef0b028080.herokuapp.com"]
 
 DATABASES = {"default": dj_database_url.config(conn_max_age=600, ssl_require=True)}
 
