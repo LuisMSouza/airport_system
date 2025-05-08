@@ -40,7 +40,7 @@ curl --location 'https://airportsystem-82ef0b028080.herokuapp.com/api/mock-airli
 - **Manual**: Execute via CLI:
 
 ```bash
-docker-compose exec web python manage.py update_airports
+docker-compose exec web python manage.py fetch_airports
 ```
 
 ## 🛠️ Technologies Used
