@@ -7,7 +7,7 @@
 
 ## ☁️ Hosting
 **API URL:**  
-https://airportsistem-eaa1fefe93b7.herokuapp.com
+https://airportsystem-82ef0b028080.herokuapp.com/
 
 ## 🔐 Authentication
 
